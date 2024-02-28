@@ -80,11 +80,35 @@ app.post("/mahasiswa", (req, res) => {
 
 app.put('/mahasiswa/:nim', (req, res) => {
     const getNim = `SELECT * FROM mahasiswa WHERE nim = ${db.escape(req.params.nim)}`
-    db.query(getNim, (err, result) => {
-        response(200, 'LALALA', result, res)
+    db.query(getNim, (err, mahasiswa) => {
+        if (err) {
+            response(500, err.sqlMessage, null, res)
+        } else {
+            const { nim, nama, kelas, alamat } = req.body
+            const updateSQL = `UPDATE mahasiswa SET nim = ${nim}, nama = '${nama}', kelas = '${kelas}', alamat = '${alamat}' WHERE nim = ${db.escape(req.params.nim)}`
+            db.query(updateSQL, (error, result) => {
+                if (error) {
+                    response(500, error.sqlMessage, null, res)
+                } else {
+                    response(200, 'SUCCESSFULLY UPDATED DATA', result, res)
+                }
+
+            })
+        }
     })
 })
 
+
+app.delete('/mahasiswa/:nim', (req, res) => {
+    const qSQL = `DELETE FROM mahasiswa WHERE nim = ${db.escape(req.params.nim)}`
+    db.query(qSQL, (err, result) => {
+        if (err) {
+            response(500, err.sqlMessage, null, res)
+        } else {
+            response(200, "SUCCESSFULLY DELETE DATA", result, res)
+        }
+    })
+})
 
 
 
